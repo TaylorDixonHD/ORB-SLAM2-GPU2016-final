@@ -22,6 +22,10 @@
 #include "MapPoint.h"
 #include "KeyFrame.h"
 #include <pangolin/pangolin.h>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <string>
 #include <mutex>
 
 namespace ORB_SLAM2
@@ -40,7 +44,66 @@ MapDrawer::MapDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
     mCameraLineWidth = fSettings["Viewer.CameraLineWidth"];
 
 }
+void MapDrawer::SaveMapPoints()
+{
+	
+	//save the data to a ply format
+	//ply
+	//format ascii 1.0
+	//comment made by Taylor Dixon...
+	//element vertex (size of mpMap->GetAllMapPoints)
+	//property float x 
+	//property float y
+	//property float z
+	//end_header
+	//0 0 0
+	//1.22 3.56 2.69 (etc)
 
+	string dt;
+	string ply;
+	string pnt_cld;
+	int pnt_count;
+	pnt_count =0;
+	pnt_cld = "";
+	time_t now = time(0);
+	//declare file name
+	dt = ctime(&now);
+	ply = "./results/" +dt + ".ply";
+	//open file
+	ofstream ply_pnt_cld;
+	ply_pnt_cld.open (ply);
+	//add header with vertex lengh
+	const vector<MapPoint*> &vpMPs = mpMap->GetAllMapPoints();
+	const vector<MapPoint*> &vpRefMPs = mpMap->GetReferenceMapPoints();
+    set<MapPoint*> spRefMPs(vpRefMPs.begin(), vpRefMPs.end());
+	
+	for(size_t i=0, iend=vpMPs.size(); i<iend;i++)
+	{
+	    if(vpMPs[i]->isBad() || spRefMPs.count(vpMPs[i]))
+	        continue;
+	    cv::Mat pos = vpMPs[i]->GetWorldPos();
+		pnt_cld = pnt_cld + to_string(pos.at<float>(0)) +" "+to_string(pos.at<float>(1)) +" "+  to_string(pos.at<float>(2)) + "\n";
+		pnt_count = pnt_count + 1;
+	}
+	for(set<MapPoint*>::iterator sit=spRefMPs.begin(), send=spRefMPs.end(); sit!=send; sit++)
+    {
+        if((*sit)->isBad())
+            continue;
+        cv::Mat pos = (*sit)->GetWorldPos();
+        pnt_cld = pnt_cld + to_string(pos.at<float>(0)) +" "+to_string(pos.at<float>(1)) +" "+  to_string(pos.at<float>(2)) + "\n";
+		pnt_count = pnt_count + 1;
+    }
+
+
+	ply_pnt_cld << "ply\nformat ascii 1.0\ncomment made by Taylor Dixon\n";
+	ply_pnt_cld << "element vertex "<< pnt_count <<"\n";
+	ply_pnt_cld << "property float x\nproperty float y\nproperty float z\n";
+	ply_pnt_cld << "end_header\n";
+	ply_pnt_cld << pnt_cld;
+	ply_pnt_cld.close();
+	return;
+	
+}
 void MapDrawer::DrawMapPoints()
 {
     const vector<MapPoint*> &vpMPs = mpMap->GetAllMapPoints();

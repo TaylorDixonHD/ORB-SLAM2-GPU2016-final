@@ -20,7 +20,7 @@
 
 #include "Viewer.h"
 #include <pangolin/pangolin.h>
-
+#include <unistd.h>
 #include <mutex>
 
 namespace ORB_SLAM2
@@ -71,6 +71,7 @@ void Viewer::Run()
     pangolin::Var<bool> menuShowGraph("menu.Show Graph",true,true);
     pangolin::Var<bool> menuLocalizationMode("menu.Localization Mode",false,true);
     pangolin::Var<bool> menuReset("menu.Reset",false,false);
+	pangolin::Var<bool> savePCL("menu.Save Point Cloud",false,false);
 
     // Define Camera Render Object (for view / scene browsing)
     pangolin::OpenGlRenderState s_cam(
@@ -136,7 +137,10 @@ void Viewer::Run()
         cv::Mat im = mpFrameDrawer->DrawFrame();
         cv::imshow("ORB-SLAM2: Current Frame",im);
         cv::waitKey(mT);
-
+		if(savePCL){
+			mpMapDrawer->SaveMapPoints();
+			savePCL = false;
+		}
         if(menuReset)
         {
             menuShowGraph = true;
