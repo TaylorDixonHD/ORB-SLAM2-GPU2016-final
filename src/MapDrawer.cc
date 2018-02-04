@@ -44,7 +44,7 @@ MapDrawer::MapDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
     mCameraLineWidth = fSettings["Viewer.CameraLineWidth"];
 
 }
-void MapDrawer::SaveMapPoints()
+void MapDrawer::SaveMapPoints(string loc)
 {
 	
 	//save the data to a ply format
@@ -68,7 +68,7 @@ void MapDrawer::SaveMapPoints()
 	time_t now = time(0);
 	//declare file name
 	dt = ctime(&now);
-	ply = "./results/" +dt + ".ply";
+	ply = loc + ".ply";
 	//open file
 	ofstream ply_pnt_cld;
 	ply_pnt_cld.open (ply);

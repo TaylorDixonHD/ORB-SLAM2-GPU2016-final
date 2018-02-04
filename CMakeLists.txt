@@ -85,6 +85,7 @@ src/cuda/Cuda.cu
 )
 
 target_link_libraries(${PROJECT_NAME}
+
 ${OpenCV_LIBS}
 ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
