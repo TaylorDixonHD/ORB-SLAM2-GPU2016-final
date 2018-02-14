@@ -5,8 +5,11 @@
 #--------------------------------------------------------------------------------------------
 
 # Camera calibration and distortion parameters (OpenCV) 
-Camera.fx: 1109.185
-Camera.fy: 1109.185
+# calculated by measuring C310 sensor measurements(4mmx3.5mm)
+# and a 4.4mm focal length
+Camera.fx: 1386
+Camera.fy: 905
+
 Camera.cx: 630
 Camera.cy: 360
 
@@ -22,26 +25,31 @@ Camera.height:  720
 Camera.fps: 10.0
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
-Camera.RGB: 0
+Camera.RGB: 1
 
 #--------------------------------------------------------------------------------------------
-# ORB Parameters
+# ORB Parameters --> some defs: docs.opencv.org/3.4.0/db/d95/classcv_1_1ORB.html#details
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
+# ORBextractor.nFeatures: 3000
+# seems like while this is hard to find a lock once there is one it is easy to keep it
 ORBextractor.nFeatures: 3000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
-ORBextractor.scaleFactor: 1.05
+# This is between 1 and 2 closer to one the more selective the 
+# algorithm will be about shared features
+ORBextractor.scaleFactor: 1.5
 
 # ORB Extractor: Number of levels in the scale pyramid	
-ORBextractor.nLevels: 12
+ORBextractor.nLevels: 8
 
 # ORB Extractor: Fast threshold
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
-# You can lower these values if your images have low contrast			
-ORBextractor.iniThFAST: 6
+# You can lower these values if your images have low contrast		
+# increasing the iniThFast makes the tracking more robust as it decreases frame time 	
+ORBextractor.iniThFAST: 8
 ORBextractor.minThFAST: 4
 
 #--------------------------------------------------------------------------------------------
